@@ -28,7 +28,6 @@ function travelsUpload(e) {
         if (line === '') continue;
         const values = line.split(',');
         const rowData = {
-          id: Number(values[0].replace(/"/g, '')),
           title: values[1].replace(/"/g, ''),
           description: values
             .slice(2, -2)
@@ -133,6 +132,77 @@ function travelsUpload(e) {
       });
     };
     reader.readAsText(file);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', init);
+const ulEl = document.querySelector('.order__errors-list');
+const formEl = document.querySelector('form');
+
+// Functions
+function init() {
+  if (formEl) {
+    formEl.addEventListener('submit', handleSubmit);
+  }
+}
+function handleSubmit(e) {
+  e.preventDefault();
+  const errors = [];
+  const fields = [
+    {
+      name: 'name',
+      label: 'Imię i nazwisko',
+      required: true,
+      pattern: '^[a-zA-Z –-]+$',
+    },
+    {
+      name: 'email',
+      label: 'Email',
+      required: true,
+      pattern: '@',
+    },
+  ];
+  fields.forEach(function (field) {
+    const value = formEl.elements[field.name].value;
+    if (field.required) {
+      if (value.length === 0) {
+        errors.push('Dane w polu ' + field.label + ' są wymagane.');
+      }
+    }
+    if (field.pattern) {
+      const reg = new RegExp(field.pattern);
+      if (!reg.test(value)) {
+        errors.push(
+          'Dane w polu ' +
+            field.label +
+            ' zawierają niedozwolone znaki, lub nie są zgodne z przyjętym w Polsce wzorem.'
+        );
+      }
+    }
+  });
+  ulEl.innerHTML = '';
+  if (errors.length === 0) {
+    const orderPriceValue = document.querySelector('.order__total-price-value');
+    const orderEmailContent = formEl.elements[1].value;
+    const summaryOrder = document.querySelector('.panel__summary');
+    const totalOrderPriceElement = document.querySelector(
+      '.order__total-price-value'
+    );
+    alert(
+      `Dziękujemy za złożenie zamówienia o wartości ${orderPriceValue.textContent}. Szczegóły zamówienia zostały wysłane na adres e-mail: ${orderEmailContent}`
+    );
+    fields.forEach(function (el) {
+      formEl[el.name].value = '';
+      summaryOrder.innerHTML = '';
+      totalOrderPriceElement.textContent = '0 PLN';
+      totalOrderPrice = 0;
+    });
+  } else {
+    errors.forEach(function (text) {
+      const liEl = document.createElement('li');
+      liEl.innerText = text;
+      ulEl.appendChild(liEl);
+    });
   }
 }
 
