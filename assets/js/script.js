@@ -4,6 +4,17 @@ uploadButton.addEventListener('change', travelsUpload);
 let totalOrderPrice = 0;
 let summaryItemCounter = 0;
 
+document
+  .querySelector('.panel__summary')
+  .addEventListener('click', function (e) {
+    e.preventDefault();
+    const clickedElement = e.target;
+    if (clickedElement.classList.contains('summary__btn-remove')) {
+      const summaryItemID = clickedElement.closest('.summary__item').id;
+      removeSummaryItem(summaryItemID);
+    }
+  });
+
 function travelsUpload(e) {
   const file = e.target.files[0];
   if (file) {
@@ -114,6 +125,8 @@ function travelsUpload(e) {
             childrenInput.value = '';
           } else {
             alert('Proszę wybrać bilet!');
+            adultsInput.value = '';
+            childrenInput.value = '';
           }
           summaryItemCounter++;
         });
@@ -122,17 +135,6 @@ function travelsUpload(e) {
     reader.readAsText(file);
   }
 }
-
-document
-  .querySelector('.panel__summary')
-  .addEventListener('click', function (e) {
-    e.preventDefault();
-    const clickedElement = e.target;
-    if (clickedElement.classList.contains('summary__btn-remove')) {
-      const summaryItemID = clickedElement.closest('.summary__item').id;
-      removeSummaryItem(summaryItemID);
-    }
-  });
 
 function removeSummaryItem(itemID) {
   const summaryItem = document.getElementById(itemID);
