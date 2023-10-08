@@ -48,20 +48,20 @@ function travelsUpload(e) {
           <form class="excursions__form">
             <div class="excursions__field">
               <label class="excursions__field-name">
-                Dorosły: <span class="excursions__price--adult">${travel.adultPrice}</span> PLN x
+                Dorosły: <span class="excursions__price--adult"> ${travel.adultPrice}</span> PLN 
                 <input class="excursions__field-input" name="adults" />
               </label>
               </div>
               <div class="excursions__field">
               <label class="excursions__field-name">
-              Dziecko: <span class="excursions__price--children">${travel.childPrice}</span> PLN x
+              Dziecko: <span class="excursions__price--children"> ${travel.childPrice}</span> PLN 
               <input class="excursions__field-input" name="children" />
               </label>
               </div>
               <div class="excursions__field excursions__field--submit">
               <input
               class="excursions__field-input excursions__field-input--submit"
-              value="dodaj do zamówienia"
+              value="Dodaj do zamówienia"
               type="submit"
               />
               </div>
@@ -153,7 +153,6 @@ function handleSubmit(e) {
       name: 'name',
       label: 'Imię i nazwisko',
       required: true,
-      pattern: '^[a-zA-Z –-]+$',
     },
     {
       name: 'email',
@@ -162,6 +161,12 @@ function handleSubmit(e) {
       pattern: '@',
     },
   ];
+
+  if (totalOrderPrice === 0) {
+    errors.push('Nie można złożyć zamówienia. Proszę wybrać bilet.');
+    formEl.elements['name'].value = '';
+    formEl.elements['email'].value = '';
+  }
   fields.forEach(function (field) {
     const value = formEl.elements[field.name].value;
     if (field.required) {
