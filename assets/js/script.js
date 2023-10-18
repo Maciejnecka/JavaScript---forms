@@ -69,42 +69,43 @@ function travelsUpload(e) {
               </li>
               `;
       });
-      const travelForms = document.querySelectorAll('.excursions__form');
-
-      travelForms.forEach(function (form) {
-        form.addEventListener('submit', function (e) {
+      document
+        .querySelector('.panel__excursions')
+        .addEventListener('submit', function (e) {
           e.preventDefault();
-          const adultsInput = form.querySelector('input[name="adults"]');
-          const childrenInput = form.querySelector('input[name="children"]');
-          const adultPrice = form.querySelector(
-            'span.excursions__price--adult'
-          );
-          const childPrice = form.querySelector(
-            'span.excursions__price--children'
-          );
-          const travelEl = form
-            .closest('.excursions__item')
-            .querySelector('.excursions__title');
-          const travelTitle = travelEl.textContent;
-          const numAdults = Number(adultsInput.value);
-          const numChildren = Number(childrenInput.value);
+          const form = e.target;
+          if (form.classList.contains('excursions__form')) {
+            const adultsInput = form.querySelector('input[name="adults"]');
+            const childrenInput = form.querySelector('input[name="children"]');
+            const adultPrice = form.querySelector(
+              'span.excursions__price--adult'
+            );
+            const childPrice = form.querySelector(
+              'span.excursions__price--children'
+            );
+            const travelEl = form
+              .closest('.excursions__item')
+              .querySelector('.excursions__title');
+            const travelTitle = travelEl.textContent;
+            const numAdults = Number(adultsInput.value);
+            const numChildren = Number(childrenInput.value);
 
-          const totalPrice =
-            numAdults * parseFloat(adultPrice.textContent) +
-            numChildren * parseFloat(childPrice.textContent);
+            const totalPrice =
+              numAdults * parseFloat(adultPrice.textContent) +
+              numChildren * parseFloat(childPrice.textContent);
 
-          const orderItem = {
-            title: travelTitle,
-            adultsAmmount: numAdults,
-            adultPrice: adultPrice.textContent,
-            childrenAmmount: numChildren,
-            childPrice: childPrice.textContent,
-            price: totalPrice,
-          };
-          const summaryItemID = `summary-item-${summaryItemCounter}`;
-          const summaryOrder = document.querySelector('.panel__summary');
-          if (orderItem.adultsAmmount > 0 || orderItem.childrenAmmount > 0) {
-            summaryOrder.innerHTML += ` 
+            const orderItem = {
+              title: travelTitle,
+              adultsAmmount: numAdults,
+              adultPrice: adultPrice.textContent,
+              childrenAmmount: numChildren,
+              childPrice: childPrice.textContent,
+              price: totalPrice,
+            };
+            const summaryItemID = `summary-item-${summaryItemCounter}`;
+            const summaryOrder = document.querySelector('.panel__summary');
+            if (orderItem.adultsAmmount > 0 || orderItem.childrenAmmount > 0) {
+              summaryOrder.innerHTML += ` 
             <li class="summary__item summary__item--prototype" id="${summaryItemID}">
             <h3 class="summary__title">
             <span class="summary__name">${orderItem.title}</span>
@@ -114,22 +115,22 @@ function travelsUpload(e) {
               <p class="summary__prices">dorośli: ${orderItem.adultsAmmount} x ${orderItem.adultPrice} PLN, dzieci: ${orderItem.childrenAmmount} x ${orderItem.childPrice} PLN</p>
               </li>
               `;
-            const totalOrderPriceElement = document.querySelector(
-              '.order__total-price'
-            );
-            totalOrderPrice += totalPrice;
-            totalOrderPriceElement.innerHTML = `Razem: <span class="order__total-price-value">${totalOrderPrice} PLN</span>
+              const totalOrderPriceElement = document.querySelector(
+                '.order__total-price'
+              );
+              totalOrderPrice += totalPrice;
+              totalOrderPriceElement.innerHTML = `Razem: <span class="order__total-price-value">${totalOrderPrice} PLN</span>
           `;
-            adultsInput.value = '';
-            childrenInput.value = '';
-          } else {
-            alert('Proszę wybrać bilet!');
-            adultsInput.value = '';
-            childrenInput.value = '';
+              adultsInput.value = '';
+              childrenInput.value = '';
+            } else {
+              alert('Proszę wybrać bilet!');
+              adultsInput.value = '';
+              childrenInput.value = '';
+            }
+            summaryItemCounter++;
           }
-          summaryItemCounter++;
         });
-      });
     };
     reader.readAsText(file);
   }
