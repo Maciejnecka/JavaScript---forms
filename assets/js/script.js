@@ -1,40 +1,34 @@
 'use strict';
 document.addEventListener('DOMContentLoaded', init);
+
 const ulEl = document.querySelector('.order__errors-list');
 const formEl = document.querySelector('form');
 const uploadButton = document.querySelector('.uploader__input');
-uploadButton.addEventListener('change', travelsUpload);
+const summaryEl = document.querySelector('.panel__summary');
+
 let totalOrderPrice = 0;
 let summaryItemCounter = 0;
 
-document
-  .querySelector('.panel__summary')
-  .addEventListener('click', function (e) {
-    e.preventDefault();
-    const clickedElement = e.target;
-    if (clickedElement.classList.contains('summary__btn-remove')) {
-      const summaryItemID = clickedElement.closest('.summary__item').id;
-      removeSummaryItem(summaryItemID);
-    }
-  });
-
-function travelsUpload(e) {
-  const file = e.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = processFileContents;
-    reader.readAsText(file);
-  }
-}
-
-// Functions
 function init() {
   if (formEl) {
     formEl.addEventListener('submit', handleSubmit);
   }
+  uploadButton.addEventListener('change', travelsUpload);
+  summaryEl.addEventListener('click', handleSummaryClick);
 }
+
 function handleSubmit(e) {
   e.preventDefault();
+  const errors = getFormErrors();
+  ulEl.innerHTML = '';
+  if (errors.length === 0) {
+    handleSuccessfulSubmit();
+  } else {
+    displayErrors(errors);
+  }
+}
+
+function getFormErrors() {
   const errors = [];
   const fields = [
     {
@@ -73,29 +67,54 @@ function handleSubmit(e) {
       }
     }
   });
-  ulEl.innerHTML = '';
-  if (errors.length === 0) {
-    const orderPriceValue = document.querySelector('.order__total-price-value');
-    const orderEmailContent = formEl.elements[1].value;
-    const summaryOrder = document.querySelector('.panel__summary');
-    const totalOrderPriceElement = document.querySelector(
-      '.order__total-price-value'
-    );
-    alert(
-      `Dziękujemy za złożenie zamówienia o wartości ${orderPriceValue.textContent}. Szczegóły zamówienia zostały wysłane na adres e-mail: ${orderEmailContent}`
-    );
-    fields.forEach(function (el) {
-      formEl[el.name].value = '';
-      summaryOrder.innerHTML = '';
-      totalOrderPriceElement.textContent = '0 PLN';
-      totalOrderPrice = 0;
-    });
-  } else {
-    errors.forEach(function (text) {
-      const liEl = document.createElement('li');
-      liEl.innerText = text;
-      ulEl.appendChild(liEl);
-    });
+  return errors;
+}
+
+function handleSuccessfulSubmit() {
+  const orderPriceValue = document.querySelector('.order__total-price-value');
+  const orderEmailContent = formEl.elements[1].value;
+  alert(
+    `Dziękujemy za złożenie zamówienia o wartości ${orderPriceValue.textContent}. Szczegóły zamówienia zostały wysłane na adres e-mail: ${orderEmailContent}`
+  );
+  resetFormAndSummary();
+}
+
+function displayErrors(errors) {
+  errors.forEach(function (text) {
+    const liEl = document.createElement('li');
+    liEl.innerText = text;
+    ulEl.appendChild(liEl);
+  });
+}
+
+function resetFormAndSummary() {
+  const fields = [
+    {
+      name: 'name',
+      label: 'Imię i nazwisko',
+    },
+    {
+      name: 'email',
+      label: 'Email',
+    },
+  ];
+  fields.forEach(function (el) {
+    formEl[el.name].value = '';
+  });
+  const summaryOrder = document.querySelector('.panel__summary');
+  const totalOrderPriceEl = document.querySelector('.order__total-price-value');
+
+  summaryOrder.innerHTML = '';
+  totalOrderPriceEl.textContent = '0 PLN';
+  totalOrderPrice = 0;
+}
+
+function handleSummaryClick(e) {
+  e.preventDefault();
+  const clickedElement = e.target;
+  if (clickedElement.classList.contains('summary__btn-remove')) {
+    const summaryItemID = clickedElement.closest('.summary__item').id;
+    removeSummaryItem(summaryItemID);
   }
 }
 
@@ -112,6 +131,15 @@ function removeSummaryItem(itemID) {
       '.order__total-price'
     );
     totalOrderPriceElement.innerHTML = `Razem: <span class="order__total-price-value">${totalOrderPrice} PLN</span>`;
+  }
+}
+
+function travelsUpload(e) {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = processFileContents;
+    reader.readAsText(file);
   }
 }
 
